@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="glass-card">
+        <div class="logo">
+            <span class="shield-icon">🛡️</span>
+            <h1>SecureBank 4FA</h1>
+        </div>
+
+        <div class="auth-box" id="auth-box">
+            <!-- Step 1: Create Account -->
+            <div id="step-register-1" class="auth-step active">
+                <h2>Create Account</h2>
+                <form id="register-form">
+                    <div class="input-group">
+                        <label for="reg-username">Username</label>
+                        <input type="text" id="reg-username" name="username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('reg-password', this)" aria-pressed="false" title="Show password">👁️</button>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="sendRegistrationOTP()">Send OTP</button>
+                    <p class="toggle-text">Already have an account? <a href="/login">Login</a></p>
+                </form>
+            </div>
+
+            <!-- Step 2: Verify Email OTP -->
+            <div id="step-register-otp" class="auth-step">
+                <h2>Confirm Your Email</h2>
+                <p>We sent a 6-digit code to your email address.</p>
+                <div class="input-group">
+                    <label for="reg-otp">OTP Code</label>
+                    <input type="text" id="reg-otp" maxlength="6" required>
+                </div>
+                <button type="button" class="btn-primary" onclick="verifyRegistrationOTP()">Verify OTP</button>
+                <p class="toggle-text"><a href="#" onclick="resendRegistrationOTP(); return false;">Resend code</a></p>
+            </div>
+
+            <!-- Step 3: Facial Biometric Capture -->
+            <div id="step-register-face" class="auth-step">
+                <h2>Capture Your Face</h2>
+                <p>Position your face in the circle, look straight at the camera, and click capture.</p>
+                <div style="position: relative; width: fit-content; margin: 0 auto;">
+                    <div class="webcam-container">
+                        <video id="webcam-reg" autoplay muted playsinline style="width: 280px; height: 280px;"></video>
+                        <canvas id="canvas-reg" class="face-overlay-canvas" style="display: none;"></canvas>
+                        <div class="face-scanner"></div>
+                    </div>
+                    <div class="capture-status" id="reg-face-status">📷 Camera will start when you enter this step.</div>
+                </div>
+                <button type="button" class="btn-primary" id="reg-face-btn" onclick="captureFaceReg()" disabled style="margin-top: 1.5rem;">Capture Face</button>
+                <button type="button" style="margin-top: 0.75rem; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; padding: 0.75rem; cursor: pointer;" onclick="initWebcam('webcam-reg', 'reg')">Retry Camera</button>
+            </div>
+
+            <!-- Step 4: Set Trusted Location -->
+            <div id="step-register-geo" class="auth-step">
+                <h2>Set Trusted Location</h2>
+                <p>Registering your current location as a secure baseline.</p>
+                <div class="geo-status">
+                    <div class="spinner"></div>
+                    <span id="reg-location-text">Detecting Location...</span>
+                </div>
+                <div class="coordinate-display" id="reg-coords" style="display: none;">
+                    <div class="coord-item">
+                        <span class="coord-label">Latitude</span>
+                        <span id="reg-lat">--</span>
+                    </div>
+                    <div class="coord-item">
+                        <span class="coord-label">Longitude</span>
+                        <span id="reg-lng">--</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-primary" id="reg-geo-btn" style="display:none; margin-top: 1.5rem;" onclick="handleFinalRegister()">Complete Registration</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

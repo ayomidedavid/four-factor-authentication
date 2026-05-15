@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="glass-card">
+        <div class="logo">
+            <span class="shield-icon">🛡️</span>
+            <h1>SecureBank 4FA</h1>
+        </div>
+
+        <div class="auth-box" id="auth-box">
+            <!-- Step 1: Login / Register Toggle -->
+            <div id="step-initial" class="auth-step active">
+                <h2>Welcome Back</h2>
+                <p>Please authenticate into your secure account.</p>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">Username or Email</label>
+                        <input type="text" id="username" name="username" required placeholder="e.g. john_doe or john@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="••••••••">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)" aria-pressed="false" title="Show password">👁️</button>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="proceedToFactor2()">Login</button>
+                    <p class="toggle-text">Don't have an account? <a href="/register">Register</a></p>
+                </form>
+            </div>
+
+            <!-- Factor 2: Email OTP -->
+            <div id="step-otp" class="auth-step">
+                <h2>Email OTP Verification</h2>
+                <p>Enter the 6-digit code sent to your registered email.</p>
+                <div class="otp-inputs">
+                    <input type="text" maxlength="6" id="otp-code" placeholder="000000">
+                </div>
+                <button type="button" class="btn-primary" onclick="proceedToFactor3()">Verify Code</button>
+            </div>
+
+            <!-- Factor 3: Face Recognition -->
+            <div id="step-face" class="auth-step">
+                <h2>Verify Your Face</h2>
+                <p>Position your face in the camera, keep your face centered, and click verify.</p>
+                <div style="position: relative; width: fit-content; margin: 0 auto;">
+                    <div class="webcam-container">
+                        <video id="webcam" autoplay muted playsinline style="width: 280px; height: 280px;"></video>
+                        <canvas id="canvas-login" class="face-overlay-canvas" style="display: none;"></canvas>
+                        <canvas id="snapshot" style="display:none;"></canvas>
+                        <div class="face-scanner"></div>
+                    </div>
+                    <div class="capture-status" id="login-face-status">📷 Camera will start when you enter this step.</div>
+                </div>
+                <button type="button" class="btn-primary" id="login-face-btn" onclick="captureFaceLogin()" disabled style="margin-top: 1.5rem;">Verify Face</button>
+                <button type="button" style="margin-top: 0.75rem; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; padding: 0.75rem; cursor: pointer;" onclick="initWebcam('webcam', 'login')">Retry Camera</button>
+            </div>
+
+            <!-- Factor 4: Geolocation -->
+            <div id="step-geo" class="auth-step">
+                <h2>Contextual Verification</h2>
+                <p>Verifying secure location access...</p>
+                <div class="geo-status">
+                    <div class="spinner"></div>
+                    <span id="location-text">Detecting Geolocation...</span>
+                </div>
+                <div class="coordinate-display" id="login-coords" style="display: none;">
+                    <div class="coord-item">
+                        <span class="coord-label">Latitude</span>
+                        <span id="login-lat">--</span>
+                    </div>
+                    <div class="coord-item">
+                        <span class="coord-label">Longitude</span>
+                        <span id="login-lng">--</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-primary" id="finish-btn" style="display:none; margin-top: 1.5rem;" onclick="finalizeAuth()">Finish Authentication</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

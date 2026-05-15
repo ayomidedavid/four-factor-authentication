@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | SecureBank{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="top-nav">
+        <div class="logo">🛡️ SecureBank</div>
+        <div class="user-profile">
+            <span>Welcome, {{ current_user.username }}</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-grid">
+        <div class="glass-card balance-card">
+            <h3>Total Balance</h3>
+            <div class="amount">$24,590.00</div>
+            <p class="status">Account Secured by 4FA ✓</p>
+        </div>
+
+        <div class="glass-card activity-card">
+            <h3>Recent Activity</h3>
+            <ul class="activity-list">
+                {% if logs %}
+                    {% for log in logs %}
+                    <li>
+                        <div class="act-details">
+                            <span class="act-title">{{ log.status }} Sign-in</span>
+                            <span class="act-details-sub">
+                                {% if log.face_verified %}Face ✓ {% endif %}
+                                {% if log.geo_verified %}Geo ✓ {% endif %}
+                                {% if log.otp_verified %}Email OTP ✓ {% endif %}
+                            </span>
+                        </div>
+                        <span class="act-date">{{ log.attempt_time.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li>
+                        <span class="act-title">No recent activity</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="security-banner">
+        <p>This session is protected by multi-layer behavioral and biometric authentication.</p>
+    </div>
+</div>
+{% endblock %}
